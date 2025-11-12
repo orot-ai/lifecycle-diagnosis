@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>라이프사이클 진단 - 당신의 인생 패턴을 발견하세요</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    // TSX 컴포넌트 코드를 여기에 넣을 예정
+    const { useState, useEffect } = React;
+
+    // Lucide 아이콘들 가져오기
+    const { Sparkles, Diamond, Hexagon } = lucide;
+
+    const LifeCycleDiagnosis = () => {
+      const [name, setName] = useState('');
+      const [birthdate, setBirthdate] = useState('');
+      const [showResult, setShowResult] = useState(false);
+      const [identityCode, setIdentityCode] = useState(null);
+      const [personalCode, setPersonalCode] = useState(null);
+      const [stars, setStars] = useState([]);
+      const [year, setYear] = useState('');
+      const [month, setMonth] = useState('');
+      const [day, setDay] = useState('');
+
+      useEffect(() => {
+        const newStars = [];
+        for (let i = 0; i < 150; i++) {
+          newStars.push({
+            id: i,
+            left: Math.random() * 100,
+            top: Math.random() * 100,
+            size: Math.random() * 2.5 + 0.5,
+            delay: Math.random() * 3,
+            duration: Math.random() * 3 + 2
+          });
+        }
+        setStars(newStars);
+      }, []);
+
+      const reduceToSingleDigit = (num) => {
+        while (num > 9) {
+          if (num === 11 || num === 22 || num === 33) {
+            return num;
+          }
+          num = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+        }
+        return num;
+      };
+
+      const calculateIdentityCode = (date) => {
+        const digits = date.replace(/-/g, '').split('').map(Number);
+        const sum = digits.reduce((acc, digit) => acc + digit, 0);
+        return reduceToSingleDigit(sum);
+      };
+
+      const calculatePersonalCode = (name) => {
+        const upperName = name.toUpperCase().replace(/[^A-Z]/g, '');
+        let sum = 0;
+        for (let char of upperName) {
+          let value = char.charCodeAt(0) - 64;
+          if (value > 9) {
+            value = reduceToSingleDigit(value);
+          }
+          sum += value;
+        }
+        return reduceToSingleDigit(sum);
+      };
+
+      const handleDiagnosis = () => {
+        if (!name.trim() || !year || !month || !day) {
+          alert('모든 정보를 입력해주세요.');
+          return;
+        }
+
+        const formattedDate = year + '-' + month.padStart(2, '0') + '-' + day.padStart(2, '0');
+        setBirthdate(formattedDate);
+        setIdentityCode(calculateIdentityCode(formattedDate));
+        setPersonalCode(calculatePersonalCode(name));
+        setShowResult(true);
+      };
+
+      if (!showResult) {
+        return React.createElement(
+          'div',
+          { className: 'min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden' },
+          React.createElement(
+            'div',
+            { className: 'absolute inset-0' },
+            stars.map(star =>
+              React.createElement('div', {
+                key: star.id,
+                className: 'absolute bg-white rounded-full opacity-70',
+                style: {
+                  left: star.left + '%',
+                  top: star.top + '%',
+                  width: star.size + 'px',
+                  height: star.size + 'px',
+                  animation: \`twinkle \${star.duration}s ease-in-out \${star.delay}s infinite\`
+                }
+              })
+            )
+          ),
+          React.createElement(
+            'div',
+            { className: 'relative z-10 container mx-auto px-4 py-8' },
+            React.createElement(
+              'div',
+              { className: 'text-center mb-12' },
+              React.createElement(
+                'div',
+                {
+                  className: 'inline-block p-4 bg-white/10 rounded-full mb-6',
+                  style: { animation: 'float 6s ease-in-out infinite' }
+                },
+                React.createElement(Sparkles, { className: 'w-12 h-12 text-purple-300' })
+              ),
+              React.createElement(
+                'h1',
+                {
+                  className: 'text-4xl sm:text-6xl font-bold mb-4',
+                  style: {
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }
+                },
+                '라이프사이클 진단'
+              ),
+              React.createElement('p', { className: 'text-xl text-gray-300 mb-2' }, '당신의 인생 패턴을 발견하세요'),
+              React.createElement('p', { className: 'text-gray-400' }, '생년월일과 이름으로 알아보는 나만의 인생 설계도')
+            ),
+            React.createElement(
+              'div',
+              {
+                className: 'max-w-md mx-auto rounded-2xl p-8 shadow-2xl',
+                style: {
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                }
+              },
+              React.createElement(
+                'div',
+                { className: 'space-y-6' },
+                React.createElement(
+                  'div',
+                  null,
+                  React.createElement('label', { className: 'block text-sm font-medium text-gray-200 mb-2' }, '이름'),
+                  React.createElement('input', {
+                    type: 'text',
+                    value: name,
+                    onChange: (e) => setName(e.target.value),
+                    placeholder: '이름을 입력하세요',
+                    className: 'w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all'
+                  })
+                ),
+                React.createElement(
+                  'div',
+                  null,
+                  React.createElement('label', { className: 'block text-sm font-medium text-gray-200 mb-2' }, '생년월일'),
+                  React.createElement(
+                    'div',
+                    { className: 'grid grid-cols-3 gap-3' },
+                    React.createElement('input', {
+                      type: 'text',
+                      value: year,
+                      onChange: (e) => setYear(e.target.value.replace(/[^0-9]/g, '')),
+                      placeholder: '년도',
+                      maxLength: 4,
+                      className: 'w-full px-3 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all text-center'
+                    }),
+                    React.createElement('input', {
+                      type: 'text',
+                      value: month,
+                      onChange: (e) => setMonth(e.target.value.replace(/[^0-9]/g, '')),
+                      placeholder: '월',
+                      maxLength: 2,
+                      className: 'w-full px-3 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all text-center'
+                    }),
+                    React.createElement('input', {
+                      type: 'text',
+                      value: day,
+                      onChange: (e) => setDay(e.target.value.replace(/[^0-9]/g, '')),
+                      placeholder: '일',
+                      maxLength: 2,
+                      className: 'w-full px-3 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all text-center'
+                    })
+                  )
+                ),
+                React.createElement(
+                  'button',
+                  {
+                    onClick: handleDiagnosis,
+                    className: 'w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg'
+                  },
+                  React.createElement(
+                    'span',
+                    { className: 'flex items-center justify-center gap-2' },
+                    React.createElement(Sparkles, { className: 'w-5 h-5' }),
+                    '진단 시작하기'
+                  )
+                )
+              )
+            ),
+            React.createElement(
+              'div',
+              { className: 'text-center mt-8 text-gray-400 text-sm' },
+              React.createElement('p', null, '🔮 수비학과 성명학 기반의 과학적 분석')
+            )
+          )
+        );
+      }
+
+      // 결과 화면
+      return React.createElement(
+        'div',
+        { className: 'min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden relative' },
+        // 배경 별들
+        React.createElement(
+          'div',
+          { className: 'absolute inset-0' },
+          stars.map(star =>
+            React.createElement('div', {
+              key: star.id,
+              className: 'absolute bg-white rounded-full opacity-30',
+              style: {
+                left: star.left + '%',
+                top: star.top + '%',
+                width: star.size + 'px',
+                height: star.size + 'px',
+                animation: \`twinkle \${star.duration}s ease-in-out \${star.delay}s infinite\`
+              }
+            })
+          )
+        ),
+
+        React.createElement(
+          'div',
+          { className: 'relative z-10 container mx-auto px-4 py-8 max-w-4xl' },
+
+          // 헤더
+          React.createElement(
+            'div',
+            { className: 'text-center mb-8' },
+            React.createElement('h1', { className: 'text-3xl sm:text-4xl font-bold text-white mb-4' },
+              name + '님의 라이프사이클 진단 결과'),
+            React.createElement(
+              'div',
+              { className: 'flex justify-center gap-8 mb-6' },
+              React.createElement(
+                'div',
+                { className: 'text-center' },
+                React.createElement('p', { className: 'text-purple-300 text-sm mb-1' }, 'Identity Code'),
+                React.createElement('div', { className: 'text-4xl font-bold text-white bg-purple-900/30 rounded-xl p-4' },
+                  identityCode)
+              ),
+              React.createElement(
+                'div',
+                { className: 'text-center' },
+                React.createElement('p', { className: 'text-blue-300 text-sm mb-1' }, 'Personal Code'),
+                React.createElement('div', { className: 'text-4xl font-bold text-white bg-blue-900/30 rounded-xl p-4' },
+                  personalCode)
+              )
+            ),
+            React.createElement(
+              'button',
+              {
+                onClick: () => setShowResult(false),
+                className: 'bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-lg transition-all text-sm'
+              },
+              '← 다시 진단하기'
+            )
+          ),
+
+          // 무료 진단 결과 카드
+          React.createElement(
+            'div',
+            {
+              className: 'rounded-2xl p-6 sm:p-8 mb-8 border border-white/10',
+              style: {
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(10px)'
+              }
+            },
+            React.createElement(
+              'div',
+              { className: 'flex items-start gap-3 mb-4' },
+              React.createElement('span', { className: 'text-2xl' }, '🎯'),
+              React.createElement('h2', { className: 'text-xl sm:text-2xl font-bold text-white' }, '무료 진단 결과')
+            ),
+            React.createElement('p', { className: 'text-gray-300 mb-6 leading-relaxed' },
+              name + '님의 Identity Code는 ',
+              React.createElement('strong', { className: 'text-purple-300' }, identityCode),
+              ', Personal Code는 ',
+              React.createElement('strong', { className: 'text-blue-300' }, personalCode),
+              '입니다. 이 숫자들은 당신의 인생에서 중요한 의미를 가집니다.'
+            ),
+
+            React.createElement(
+              'div',
+              { className: 'bg-yellow-900/30 border border-yellow-600/30 rounded-xl p-6' },
+              React.createElement(
+                'div',
+                { className: 'flex items-center gap-2 mb-3' },
+                React.createElement('span', { className: 'text-xl' }, '💡'),
+                React.createElement('h3', { className: 'text-yellow-200 font-bold text-lg' }, '기본 성향 분석')
+              ),
+              React.createElement('p', { className: 'text-yellow-100/80 text-sm leading-relaxed' },
+                '이 무료 진단은 기본적인 수치 분석입니다. 더 정확하고 상세한 해석을 원하신다면 아래의 전문 서비스를 이용해보세요. Identity Code와 Personal Code의 조합으로 당신만의 독특한 인생 패턴을 발견할 수 있습니다.'
+              )
+            )
+          ),
+
+          // 상세 서비스 안내 그리드
+          React.createElement(
+            'div',
+            { className: 'grid sm:grid-cols-1 md:grid-cols-2 gap-6' },
+
+            // 심층 분석 리포트
+            React.createElement(
+              'a',
+              {
+                href: 'http://pf.kakao.com/_qEXHn/chat',
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                className: 'bg-gradient-to-br from-amber-950/60 to-orange-950/60 hover:from-amber-900/60 hover:to-orange-900/60 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-amber-700/40 hover:border-amber-600/60 transition-all group relative overflow-hidden'
+              },
+              React.createElement(
+                'div',
+                { className: 'absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity' }
+              ),
+              React.createElement(
+                'div',
+                { className: 'relative z-10 space-y-4' },
+                React.createElement(
+                  'h4',
+                  { className: 'text-amber-200 font-bold text-lg mb-2 group-hover:text-amber-100 transition-colors flex items-center gap-2' },
+                  React.createElement('span', { className: 'text-xl' }, '📊'),
+                  '심층 분석 리포트'
+                ),
+                React.createElement(
+                  'p',
+                  { className: 'text-amber-200/80 text-xs leading-relaxed' },
+                  '무료 진단을 넘어선',
+                  React.createElement('br'),
+                  React.createElement('strong', { className: 'text-amber-100' }, '완전한 인생 설계도')
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'bg-amber-900/30 rounded-xl p-4 border border-amber-700/30' },
+                  React.createElement('p', { className: 'text-amber-200/90 text-xs mb-2' }, '📋 심층 분석 구성:'),
+                  React.createElement(
+                    'div',
+                    { className: 'text-amber-100/70 text-[11px] leading-relaxed space-y-1' },
+                    React.createElement('p', null, '• Identity Code (정체성 코드)'),
+                    React.createElement('p', null, '• Personal Code (개인 코드)'),
+                    React.createElement('p', null, '• Transition Period (전환 시기)'),
+                    React.createElement('p', null, '• Turning Cycle (변화 주기)'),
+                    React.createElement('p', null, '• Growth Cycle (성장 주기)'),
+                    React.createElement('p', null, '• Annual Forecast (연간 전망 - 9년 주기)')
+                  ),
+                  React.createElement('p', { className: 'text-amber-200/60 text-[10px] mt-3 italic' },
+                    '→ 6가지 핵심 분석을 통한 완전한 인생 설계도'
+                  )
+                ),
+                React.createElement(
+                  'a',
+                  {
+                    href: 'http://pf.kakao.com/_qEXHn/chat',
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                    onClick: (e) => e.stopPropagation(),
+                    className: 'block bg-slate-950/60 rounded-xl p-4 border border-amber-700/30 hover:border-amber-600/50 transition-all'
+                  },
+                  React.createElement(
+                    'p',
+                    { className: 'text-amber-200 font-bold text-sm mb-2' },
+                    '💬 카카오톡 문의하기'
+                  ),
+                  React.createElement(
+                    'p',
+                    { className: 'text-amber-200/70 text-[11px] leading-relaxed' },
+                    '1:1 맞춤 상담으로',
+                    React.createElement('br'),
+                    React.createElement('strong', { className: 'text-amber-300' }, '정밀한 해석 제공')
+                  )
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'pt-2' },
+                  React.createElement(
+                    'div',
+                    { className: 'text-amber-300 text-xs font-bold text-center group-hover:underline' },
+                    '상세 리포트 확인하기 →'
+                  )
+                )
+              )
+            ),
+
+            // AI 상담사
+            React.createElement(
+              'a',
+              {
+                href: 'https://litt.ly/bewhyami',
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                className: 'bg-gradient-to-br from-purple-950/60 to-indigo-950/60 hover:from-purple-900/60 hover:to-indigo-900/60 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-purple-700/40 hover:border-purple-600/60 transition-all group relative overflow-hidden'
+              },
+              React.createElement(
+                'div',
+                { className: 'absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity' }
+              ),
+              React.createElement(
+                'div',
+                { className: 'relative z-10 space-y-4' },
+                React.createElement(
+                  'h4',
+                  { className: 'text-purple-200 font-bold text-lg mb-2 group-hover:text-purple-100 transition-colors flex items-center gap-2' },
+                  React.createElement('span', { className: 'text-xl' }, '⭐'),
+                  '개인 맞춤형 AI 상담사'
+                ),
+                React.createElement(
+                  'p',
+                  { className: 'text-purple-200/80 text-xs leading-relaxed' },
+                  '당신의 출생차트를 학습한',
+                  React.createElement('br'),
+                  React.createElement('strong', { className: 'text-purple-100' }, '24시간 맞춤형 상담사')
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'bg-purple-900/30 rounded-xl p-4 border border-purple-700/30' },
+                  React.createElement('p', { className: 'text-purple-200/90 text-xs mb-2' }, '💬 무엇이든 물어보세요:'),
+                  React.createElement(
+                    'div',
+                    { className: 'text-purple-100/70 text-[11px] leading-relaxed space-y-1' },
+                    React.createElement('p', null, '• "지금 이직해도 될까?"'),
+                    React.createElement('p', null, '• "이 사람이 나랑 맞을까?"'),
+                    React.createElement('p', null, '• "올해 중요한 결정을 언제 해야 할까?"'),
+                    React.createElement('p', null, '• "내 강점을 어떻게 활용하면 좋을까?"'),
+                    React.createElement('p', null, '• "지금 번아웃이 온 이유는 뭘까?"'),
+                    React.createElement('p', null, '• "이 관계를 계속 가져가야 할까?"')
+                  ),
+                  React.createElement('p', { className: 'text-purple-200/60 text-[10px] mt-3 italic' },
+                    '→ 일상의 모든 고민을 당신의 차트 기반으로 답변'
+                  )
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'bg-slate-950/60 rounded-xl p-4 border border-purple-700/30' },
+                  React.createElement(
+                    'p',
+                    { className: 'text-purple-200/70 text-xs leading-relaxed mb-2' },
+                    '자기이해·관계·진로·사업·연애·건강 등',
+                    React.createElement('br'),
+                    React.createElement('strong', { className: 'text-purple-300' }, '모든 영역 무제한 질문 ∞')
+                  ),
+                  React.createElement(
+                    'div',
+                    { className: 'pt-2 mt-2 border-t border-purple-700/20' },
+                    React.createElement(
+                      'p',
+                      { className: 'text-purple-300 font-bold text-sm' },
+                      '🎉 이벤트: 첫 1주일 체험 1만원'
+                    )
+                  )
+                ),
+                React.createElement(
+                  'div',
+                  { className: 'pt-2' },
+                  React.createElement(
+                    'div',
+                    { className: 'text-purple-300 text-xs font-bold text-center group-hover:underline' },
+                    '1주일 체험 시작하기 →'
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+    };
+
+    // 앱 렌더링
+    const App = () => {
+      return React.createElement(LifeCycleDiagnosis);
+    };
+
+    ReactDOM.render(React.createElement(App), document.getElementById('root'));
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+    * {
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</body>
+</html>
